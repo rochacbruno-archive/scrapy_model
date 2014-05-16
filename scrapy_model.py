@@ -12,7 +12,7 @@ class Storage(dict):
     A dict that accepts [keys] or .attributes
     >>> obj = Storage()
     >>> obj["name"] = "Bruno"
-    >>> obj.company = "Catho"
+    >>> obj.company = "ACME"
     >>> obj.name == obj["name]
     >>> obj["company] == obj.company
     """
