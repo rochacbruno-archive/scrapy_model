@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     print "Fetcher holds the data"
     print fetcher._data.name
-    print fetcher._data
+    pprint(fetcher._data)
 
     # How to populate an object
     print "Populating an object"
