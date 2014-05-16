@@ -1,4 +1,5 @@
-### Helps to create scraper using Scrapy Selectors
+Create scraper using Scrapy Selectors
+============================================
 
 allows you to select by CSS or by XPATH
 
@@ -6,6 +7,19 @@ Implemented in a Model approach, you create a Fetcher class and defines some fie
 
 Data can be normalized using ``parse_<field>`` methods.
 
+### Instalation
+
+easy to install 
+
+If running ubuntu maybe you need to run ``sudo apt-get install python-scrapy``
+
+```
+git clone https://github.com/rochacbruno/scrapy_model
+cd scrapy_model
+pip install -r requirements.txt
+python example.py
+```
+> NOTE: I need to create a setup.py and release to PyPI  
 > Take a look at the example.py
 
 
