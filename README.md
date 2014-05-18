@@ -1,11 +1,101 @@
 Create scraper using Scrapy Selectors
 ============================================
 
-allows you to select by CSS or by XPATH
+## What is Scrapy?
 
-Implemented in a Model approach, you create a Fetcher class and defines some fields which points to Xpath or Css selectors, those fields are fetched and an object populated with data.
+Scrapy is a fast high-level screen scraping and web crawling framework, used to crawl websites and extract structured data from their pages. It can be used for a wide range of purposes, from data mining to monitoring and automated testing.
 
-Data can be normalized using ``parse_<field>`` methods.
+http://scrapy.org/
+
+
+## What is scrapy_model ?
+
+It is just a helper to create scrapers using the Scrapy Selectors allowing you to select elements by CSS or by XPATH and structuring your scraper via Models (just like an ORM model) and plugable to an ORM model via ``populate`` method. 
+
+Import the BaseFetcherModel, CSSField or XPathField (you can use both)
+
+```
+from scrapy_model import BaseFetcherModel, CSSField
+```
+
+Go to a webpage you want to scrap and use chrome dev tools or firebug to figure out the css paths then considering there is a ```<span id="person">Bruno Rocha <a href="http://brunorocha.org">website</a></span>``` that you want to get.
+
+
+```
+class MyFetcher(BaseFetcherModel):
+    name = CSSField('span#person')
+    website = CSSField('span#person a')
+    # XPathField('//xpath_selector_here')
+```
+
+Every method named ``parse_<field>`` will run after all the fields are fetched for each field.
+
+```
+    def parse_name(self, selector):
+        # here selector is the scrapy selector for 'span#person'
+        name = selector.css('::text').extract()
+        return name
+        
+    def parse_website(self, selector):
+        # here selector is the scrapy selector for 'span#person a'
+        website_url = selector.css('::attr(href)').extract()
+        return website_url
+
+```
+
+
+after defined need to run the scraper
+
+
+```
+
+fetcher = Myfetcher(url='http://.....')  # optionally you can use cached_fetch=True to cache requests on redis
+fetcher.parse()
+```
+
+Now you can iterate ``_data``, ``_raw_data`` and atributes in fetcher
+
+```
+>>> fetcher.name
+<CSSField - name - Bruno Rocha>
+>>> fetcher.name.value
+Bruno Rocha
+>>> fetcher._data
+{"name": "Bruno Rocha", "website": "http://brunorocha.org"}
+```
+
+You can populate some object
+
+```
+>>> obj = MyObject()
+>>> fetcher.populate(obj)  # fields optional
+
+>>> obj.name
+Bruno Rocha
+```
+
+If you do not want to define each field explicitly in the class, you can use a json file to automate the process
+
+```
+class MyFetcher(BaseFetcherModel):
+   """ will load from json """
+   
+fetcher = MyFetcher(url='http://.....')
+fetcher.load_mappings_from_file('path/to/file.json')
+fetcher.parse()
+```
+
+In that case file.json should be
+
+```
+{
+   "name": {"css", "span#person"},
+   "website": {"css": "span#person a"}
+}
+```
+
+You can use ``{"xpath": "..."}`` in case you prefer select by xpath
+
 
 ### Instalation
 
