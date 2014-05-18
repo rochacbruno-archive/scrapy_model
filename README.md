@@ -9,19 +9,32 @@ Data can be normalized using ``parse_<field>`` methods.
 
 ### Instalation
 
-easy to install 
+easy to install
 
-If running ubuntu maybe you need to run ``sudo apt-get install python-scrapy``
+If running ubuntu maybe you need to run:
+
+```
+sudo apt-get install python-scrapy
+sudo apt-get install libffi-dev
+sudo apt-get install python-dev
+```
+
+then
+
+```
+pip install scrapy_model
+```
+
+or
+
 
 ```
 git clone https://github.com/rochacbruno/scrapy_model
 cd scrapy_model
 pip install -r requirements.txt
+python setup.py install
 python example.py
 ```
-> NOTE: I need to create a setup.py and release to PyPI  
-> Take a look at the example.py
-
 
 Example code to fetch the url http://en.m.wikipedia.org/wiki/Guido_van_Rossum
 

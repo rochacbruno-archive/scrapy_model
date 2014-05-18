@@ -1,7 +1,10 @@
 # coding: utf-8
 
+__all__ = ['BaseFetcherModel', 'CSSField', 'XPathField']
+
 import requests
 from redis import Redis
+from redis.exceptions import ConnectionError
 from scrapy.selector import Selector
 
 redis = Redis()
@@ -118,12 +121,15 @@ class BaseFetcherModel(object):
 
     def fetch(self, url=None):
         url = self.url or url
-        cached = redis.get(url)
-        if cached and self.cache_fetch:
-            return cached
-        response = requests.get(url)
-        if self.cache_fetch:
-            redis.set(url, response.content, ex=1800)
+        try:
+            cached = redis.get(url)
+            if cached and self.cache_fetch:
+                return cached
+            response = requests.get(url)
+            if self.cache_fetch:
+                redis.set(url, response.content, ex=1800)
+        except ConnectionError:
+            response = requests.get(url)
         return response.content
 
     @property
