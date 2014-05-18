@@ -26,13 +26,13 @@ test_requirements = [
 
 setup(
     name='scrapy_model',
-    version='0.1.1',
+    version='0.1.2',
     description='Scrapy helper to create scrapers from models',
     long_description=readme,
     author='Bruno Rocha',
     author_email='rochacbruno@gmail.com',
     url='https://github.com/rochacbruno/scrapy_model',
-    py_modules=['cached_property'],
+    py_modules=['scrapy_model'],
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
