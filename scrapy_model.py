@@ -174,7 +174,7 @@ class BaseFetcherModel(object):
 
     def load_generic_fields(self):
         for k, v in self._data.items():
-            if not k in self._fields:
+            if k not in self._fields:
                 field = GenericField(k, v)
                 self._fields.append(field)
                 setattr(self, k, field)

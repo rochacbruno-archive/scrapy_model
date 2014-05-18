@@ -1,4 +1,4 @@
-#coding: utf-8
+# coding: utf-8
 
 from scrapy_model import BaseFetcherModel, CSSField, XPathField
 
