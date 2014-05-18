@@ -35,8 +35,7 @@ class BaseField(object):
     def __init__(self, query, auto_extract=False):
         self.query = query
         self.auto_extract = auto_extract
-        self._data = None
-        self._raw_data = None
+        self._data = self.selector = self._raw_data = None
 
     @property
     def value(self):
@@ -166,7 +165,7 @@ class BaseFetcherModel(object):
         self.run_field_parsers()
 
         for field in self._fields:
-            field._data = self._data.get(field.identifier)
+            field._data = field.selector = self._data.get(field.identifier)
 
         self.post_parse()
 
@@ -180,7 +179,9 @@ class BaseFetcherModel(object):
                 setattr(self, k, field)
 
     def post_parse(self):
-        pass
+        """
+        To be implemented optionally in child classes
+        """
 
     def run_field_parsers(self):
         self._raw_data = self._data.copy()
