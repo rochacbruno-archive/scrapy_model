@@ -14,14 +14,17 @@ It is just a helper to create scrapers using the Scrapy Selectors allowing you t
 
 Import the BaseFetcherModel, CSSField or XPathField (you can use both)
 
-```
+```python
 from scrapy_model import BaseFetcherModel, CSSField
 ```
 
-Go to a webpage you want to scrap and use chrome dev tools or firebug to figure out the css paths then considering there is a ```<span id="person">Bruno Rocha <a href="http://brunorocha.org">website</a></span>``` that you want to get.
+Go to a webpage you want to scrap and use chrome dev tools or firebug to figure out the css paths then considering you want to get the following fragment from some page.
 
+```html
+    <span id="person">Bruno Rocha <a href="http://brunorocha.org">website</a></span>
+``` 
 
-```
+```python
 class MyFetcher(BaseFetcherModel):
     name = CSSField('span#person')
     website = CSSField('span#person a')
@@ -30,7 +33,7 @@ class MyFetcher(BaseFetcherModel):
 
 Every method named ``parse_<field>`` will run after all the fields are fetched for each field.
 
-```
+```python
     def parse_name(self, selector):
         # here selector is the scrapy selector for 'span#person'
         name = selector.css('::text').extract()
@@ -47,7 +50,7 @@ Every method named ``parse_<field>`` will run after all the fields are fetched f
 after defined need to run the scraper
 
 
-```
+```python
 
 fetcher = Myfetcher(url='http://.....')  # optionally you can use cached_fetch=True to cache requests on redis
 fetcher.parse()
@@ -55,7 +58,7 @@ fetcher.parse()
 
 Now you can iterate ``_data``, ``_raw_data`` and atributes in fetcher
 
-```
+```python
 >>> fetcher.name
 <CSSField - name - Bruno Rocha>
 >>> fetcher.name.value
@@ -66,7 +69,7 @@ Bruno Rocha
 
 You can populate some object
 
-```
+```python
 >>> obj = MyObject()
 >>> fetcher.populate(obj)  # fields optional
 
@@ -76,7 +79,7 @@ Bruno Rocha
 
 If you do not want to define each field explicitly in the class, you can use a json file to automate the process
 
-```
+```python
 class MyFetcher(BaseFetcherModel):
    """ will load from json """
    
@@ -87,7 +90,7 @@ fetcher.parse()
 
 In that case file.json should be
 
-```
+```json
 {
    "name": {"css", "span#person"},
    "website": {"css": "span#person a"}
@@ -103,7 +106,7 @@ easy to install
 
 If running ubuntu maybe you need to run:
 
-```
+```bash
 sudo apt-get install python-scrapy
 sudo apt-get install libffi-dev
 sudo apt-get install python-dev
@@ -111,14 +114,14 @@ sudo apt-get install python-dev
 
 then
 
-```
+```bash
 pip install scrapy_model
 ```
 
 or
 
 
-```
+```bash
 git clone https://github.com/rochacbruno/scrapy_model
 cd scrapy_model
 pip install -r requirements.txt
@@ -128,7 +131,7 @@ python example.py
 
 Example code to fetch the url http://en.m.wikipedia.org/wiki/Guido_van_Rossum
 
-```
+```python
 #coding: utf-8
 
 from scrapy_model import BaseFetcherModel, CSSField, XPathField
