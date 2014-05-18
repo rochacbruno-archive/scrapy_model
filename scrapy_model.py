@@ -107,6 +107,7 @@ class BaseFetcherModel(object):
     def __init__(self, url=None, mappings=None, cache_fetch=False):
         self.load_fields()
         self.url = url
+        self.refresh = False
         self._data = Storage()
         self._selector = None
         self.mappings = mappings or self.mappings.copy()
@@ -133,9 +134,10 @@ class BaseFetcherModel(object):
         return response.content
 
     @property
-    def selector(self, refresh=False):
-        if not self._selector or refresh:
+    def selector(self):
+        if not self._selector or self.refresh:
             self._selector = Selector(text=self.fetch())
+            self.refresh = False
         return self._selector
 
     def parse(self, selector=None):
