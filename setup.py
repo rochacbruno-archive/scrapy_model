@@ -26,7 +26,7 @@ test_requirements = [
 
 setup(
     name='scrapy_model',
-    version='0.1.0',
+    version='0.1.1',
     description='Scrapy helper to create scrapers from models',
     long_description=readme,
     author='Bruno Rocha',

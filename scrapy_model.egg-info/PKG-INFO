@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: scrapy-model
-Version: 0.1.0
+Version: 0.1.1
 Summary: Scrapy helper to create scrapers from models
 Home-page: https://github.com/rochacbruno/scrapy_model
 Author: Bruno Rocha

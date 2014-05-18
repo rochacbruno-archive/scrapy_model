@@ -1,6 +1,7 @@
 LICENSE
 MANIFEST.in
 Makefile
+README.md
 setup.cfg
 setup.py
 scrapy_model.egg-info/PKG-INFO
