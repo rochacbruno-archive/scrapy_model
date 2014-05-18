@@ -1,3 +1,4 @@
+flake8
 wheel==0.23.0
 cffi==0.8.2
 Scrapy==0.22.2
