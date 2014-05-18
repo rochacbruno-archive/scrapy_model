@@ -1,5 +1,6 @@
 include LICENSE
 include Makefile
+include README.md
 
 recursive-include tests *
 recursive-exclude * __pycache__
