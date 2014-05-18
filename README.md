@@ -4,6 +4,9 @@ Create scraper using Scrapy Selectors
 [![Build
 Status](https://travis-ci.org/rochacbruno/scrapy_model.png)](https://travis-ci.org/rochacbruno/scrapy_model)
 
+[![PyPi version](https://pypip.in/v/scrapy_model/badge.png)](https://pypi.python.org/pypi/scrapy_model/)
+[![PyPi downloads](https://pypip.in/d/scrapy_model/badge.png)](https://pypi.python.org/pypi/scrapy_model/)
+
 ## What is Scrapy?
 
 Scrapy is a fast high-level screen scraping and web crawling framework, used to crawl websites and extract structured data from their pages. It can be used for a wide range of purposes, from data mining to monitoring and automated testing.
