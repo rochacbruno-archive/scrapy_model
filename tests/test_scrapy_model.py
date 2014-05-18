@@ -32,5 +32,22 @@ class TestScrapy_model(unittest.TestCase):
 
     def test_name_in_data_is_the_same_in_fields(self):
         self.assertEquals(self.fetcher.name.value, self.fetcher._data.name)
+
+    def test_load_mappings_from_json_string(self):
+        js = '{"test": {"css": "div"}}'
+        self.fetcher.load_mappings_from_file(js)
+        self.assertEquals(self.fetcher.mappings["test"], {"css": "div"})
+
+    def test_load_mappings_from_json_path(self):
+        self.fetcher.load_mappings_from_file('mappings.json')
+        self.assertEquals(self.fetcher.mappings["test"], {"css": "div"})
+
+    def test_load_mappings_from_json_file(self):
+        with open('mappings.json') as jsonfile:
+            self.fetcher.load_mappings_from_file(jsonfile)
+            self.assertEquals(
+                self.fetcher.mappings["test"], {"css": "div"}
+            )
+
 if __name__ == '__main__':
     unittest.main()

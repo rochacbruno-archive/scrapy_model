@@ -2,6 +2,7 @@
 
 __all__ = ['BaseFetcherModel', 'CSSField', 'XPathField']
 
+import json
 import requests
 from redis import Redis
 from redis.exceptions import ConnectionError
@@ -200,10 +201,18 @@ class BaseFetcherModel(object):
         """
         Will take a JSON file object, string or path
         and loads on to self.mappings
-         mappings = {
+         {
             'name': {'css': 'div#test'},
             'phone': {'xpath': '//phone'},
             'location': '.location'  # assumes css
-        }
+         }
         """
-        raise NotImplementedError("Its on Roadmap...")
+        if isinstance(path_or_file, basestring):
+            try:
+                data = open(path_or_file).read()
+            except IOError:
+                data = path_or_file
+        elif isinstance(path_or_file, file) or hasattr(path_or_file, 'read'):
+            data = path_or_file.read()
+
+        self.mappings.update(json.loads(data))
