@@ -10,7 +10,7 @@ from redis import Redis
 from redis.exceptions import ConnectionError
 from scrapy.selector import Selector
 
-logger = logging.getLogger("scrapy_model")
+logger = logging.getLogger(__name__)
 
 
 class NoCache(object):
