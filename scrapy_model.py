@@ -31,14 +31,15 @@ class RedisCache(object):
     def get(self, key):
         try:
             return self.cache.get(key)
-        except ConnectionError:
+        except ConnectionError as e:
+            logger.error("Cant connect to Redis server %s", e)
             return None
 
     def set(self, key, value, expire=None):
         try:
             self.cache.set(key, value, expire)
-        except ConnectionError:
-            pass
+        except ConnectionError as e:
+            logger.error("Cant connect to Redis server %s", e)
 
 
 class Storage(dict):
