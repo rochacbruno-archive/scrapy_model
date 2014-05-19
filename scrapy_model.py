@@ -1,6 +1,6 @@
 # coding: utf-8
 
-__all__ = ['BaseFetcherModel', 'CSSField', 'XPathField']
+__all__ = ['BaseFetcherModel', 'CSSField', 'XPathField', 'RedisCache']
 
 import json
 import logging
