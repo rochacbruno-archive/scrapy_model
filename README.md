@@ -16,7 +16,7 @@ http://scrapy.org/
 
 ## What is scrapy_model ?
 
-It is just a helper to create scrapers using the Scrapy Selectors allowing you to select elements by CSS or by XPATH and structuring your scraper via Models (just like an ORM model) and plugable to an ORM model via ``populate`` method. 
+It is just a helper to create scrapers using the Scrapy Selectors allowing you to select elements by CSS or by XPATH and structuring your scraper via Models (just like an ORM model) and plugable to an ORM model via ``populate`` method.
 
 Import the BaseFetcherModel, CSSField or XPathField (you can use both)
 
@@ -28,7 +28,7 @@ Go to a webpage you want to scrap and use chrome dev tools or firebug to figure 
 
 ```html
     <span id="person">Bruno Rocha <a href="http://brunorocha.org">website</a></span>
-``` 
+```
 
 ```python
 class MyFetcher(BaseFetcherModel):
@@ -37,6 +37,9 @@ class MyFetcher(BaseFetcherModel):
     # XPathField('//xpath_selector_here')
 ```
 
+Fields can receive ``auto_extract=True`` parameter which auto extracts values from selector before calling the parse or processors. Also you can pass the ``takes_first=True`` which will for auto_extract and also tries to get the first element of the result, because scrapy selectors returns a list of matched elements.
+
+
 Every method named ``parse_<field>`` will run after all the fields are fetched for each field.
 
 ```python
@@ -44,7 +47,7 @@ Every method named ``parse_<field>`` will run after all the fields are fetched f
         # here selector is the scrapy selector for 'span#person'
         name = selector.css('::text').extract()
         return name
-        
+
     def parse_website(self, selector):
         # here selector is the scrapy selector for 'span#person a'
         website_url = selector.css('::attr(href)').extract()
@@ -88,7 +91,7 @@ If you do not want to define each field explicitly in the class, you can use a j
 ```python
 class MyFetcher(BaseFetcherModel):
    """ will load from json """
-   
+
 fetcher = MyFetcher(url='http://.....')
 fetcher.load_mappings_from_file('path/to/file.json')
 fetcher.parse()
@@ -104,6 +107,57 @@ In that case file.json should be
 ```
 
 You can use ``{"xpath": "..."}`` in case you prefer select by xpath
+
+
+### parse and processor
+
+There are 2 ways of transforming or normalizing the data for each field
+
+#### Processors
+
+A processor is a function, or a list of functions which will be called in the given sequence against the field value, it receives the raw_selector or the value depending on auto_extract and takes_first arguments.
+
+It can be used for Normalization, Clean, Transformation etc..
+
+Example:
+
+```python
+
+def normalize_state(state_name):
+    # query my database and return the first instance of state object
+    return MyDatabase.State.Search(name=state_name).first()
+
+def text_cleanup(state_name):
+    return state_name.strip().replace('-', '').lower()
+
+class MyFetcher(BaseFetcherModel):
+    state = CSSField(
+        "#state::text",
+        takes_first=True,
+        processor=[text_cleanup, normalize_state]
+    )
+
+fetcher = MyFetcher(url="http://....")
+fetcher.parse()
+
+fetcher._raw_data.state
+'Sao-Paulo'
+fetcher._data.state
+<ORM Instance - State - São Paulo>
+```
+
+#### Parse methods
+
+any method called ``parse_<field_name>`` will run after all the process of selecting and parsing, it receives the selector or the value depending on auto_extract and takes_first argument in that field.
+
+example:
+
+```python
+def parse_name(self, selector):
+   return selector.css('::text').extract()[0].upper()
+```
+
+In the above case, the name field returns the raw_selector and in the parse method we can build extra queries using ``css`` or ``xpath`` and also we need to extract() the values from the selector and optionally select the first element and apply any transformation we need.
 
 
 ### Instalation
