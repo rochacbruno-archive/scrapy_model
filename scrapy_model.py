@@ -5,6 +5,7 @@ __all__ = ['BaseFetcherModel', 'CSSField', 'XPathField']
 import json
 import logging
 import requests
+from collections import Sequence
 from redis import Redis
 from redis.exceptions import ConnectionError
 from scrapy.selector import Selector
@@ -54,10 +55,23 @@ class BaseField(object):
         if self.takes_first and len(extracted) > 0:
             for value in extracted:
                 if value is not None and value != '':
-                    return self.processor(value)
+                    return self._processor(value)
         elif self.auto_extract:
-            return self.processor(extracted)
-        return self.processor(parsed)
+            return self._processor(extracted)
+        return self._processor(parsed)
+
+    def _processor(self, data):
+        """
+        runs the processor if defined
+        processor can be a list of functions to be chained
+        or a single function
+        """
+        if isinstance(self.processor, Sequence):
+            for function in self.processor:
+                data = function(data)
+        else:
+            data = self.processor(data)
+        return data
 
     def parse(self, selector):
         raise NotImplementedError("Must be implemented in child class")

@@ -9,7 +9,7 @@ class TestFetcher(BaseFetcherModel):
     nationality = CSSField(
         '#content > div:nth-child(1) > table > tr:nth-child(4) > td > a::text',
         takes_first=True,
-        processor=lambda value: value.upper()
+        processor=lambda value: value.upper()  # it could be a list of funcs
     )
 
     links = CSSField(
