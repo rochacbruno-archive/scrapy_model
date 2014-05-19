@@ -3,12 +3,15 @@
 __all__ = ['BaseFetcherModel', 'CSSField', 'XPathField']
 
 import json
+import logging
 import requests
 from redis import Redis
 from redis.exceptions import ConnectionError
 from scrapy.selector import Selector
 
 redis = Redis()
+
+logger = logging.getLogger("scrapy_model")
 
 
 class Storage(dict):
@@ -33,9 +36,12 @@ class BaseField(object):
     Base for other selector fields
     """
 
-    def __init__(self, query, auto_extract=False):
+    def __init__(self, query,
+                 auto_extract=False, takes_first=False, processor=None):
         self.query = query
         self.auto_extract = auto_extract
+        self.takes_first = takes_first
+        self.processor = processor or (lambda untouched_data: untouched_data)
         self._data = self.selector = self._raw_data = None
 
     @property
@@ -44,9 +50,14 @@ class BaseField(object):
 
     def _parse(self, selector):
         parsed = self.parse(selector)
-        if self.auto_extract:
-            return parsed.extract()
-        return parsed
+        extracted = parsed.extract()
+        if self.takes_first and len(extracted) > 0:
+            for value in extracted:
+                if value is not None and value != '':
+                    return self.processor(value)
+        elif self.auto_extract:
+            return self.processor(extracted)
+        return self.processor(parsed)
 
     def parse(self, selector):
         raise NotImplementedError("Must be implemented in child class")
@@ -189,8 +200,15 @@ class BaseFetcherModel(object):
         for field_name, raw_selector in self._data.items():
             field_parser = getattr(self, 'parse_%s' % field_name, None)
             if field_parser:
-                parsed_data = field_parser(raw_selector)
-                self._data[field_name] = parsed_data
+                try:
+                    parsed_data = field_parser(raw_selector)
+                except Exception as e:
+                    logger.error(
+                        "Exception ocurred in parse_%s: %s", field_name, e
+                    )
+                    self._data[field_name] = raw_selector
+                else:
+                    self._data[field_name] = parsed_data
 
     def populate(self, obj, fields=None):
         fields = fields or self._data.keys()

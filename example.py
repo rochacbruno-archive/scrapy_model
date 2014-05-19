@@ -7,7 +7,9 @@ class TestFetcher(BaseFetcherModel):
     photo_url = XPathField('//*[@id="content"]/div[1]/table/tr[2]/td/a')
 
     nationality = CSSField(
-        '#content > div:nth-child(1) > table > tr:nth-child(4) > td > a',
+        '#content > div:nth-child(1) > table > tr:nth-child(4) > td > a::text',
+        takes_first=True,
+        processor=lambda value: value.upper()
     )
 
     links = CSSField(
@@ -19,9 +21,6 @@ class TestFetcher(BaseFetcherModel):
         return "http://en.m.wikipedia.org/{}".format(
             selector.xpath("@href").extract()[0]
         )
-
-    def parse_nationality(self, selector):
-        return selector.css("::text").extract()[0]
 
     def parse_name(self, selector):
         return selector.extract()[0]
