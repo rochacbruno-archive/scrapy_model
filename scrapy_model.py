@@ -10,9 +10,35 @@ from redis import Redis
 from redis.exceptions import ConnectionError
 from scrapy.selector import Selector
 
-redis = Redis()
-
 logger = logging.getLogger("scrapy_model")
+
+
+class NoCache(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def get(self, key):
+        return None
+
+    def set(self, key, value, expire=None):
+        pass
+
+
+class RedisCache(object):
+    def __init__(self, *args, **kwargs):
+        self.cache = Redis(*args, **kwargs)
+
+    def get(self, key):
+        try:
+            return self.cache.get(key)
+        except ConnectionError:
+            return None
+
+    def set(self, key, value, expire=None):
+        try:
+            self.cache.set(key, value, expire)
+        except ConnectionError:
+            pass
 
 
 class Storage(dict):
@@ -129,7 +155,11 @@ class BaseFetcherModel(object):
 
     mappings = {}
 
-    def __init__(self, url=None, mappings=None, cache_fetch=False):
+    def __init__(self, url=None, mappings=None,
+                 cache_fetch=False,
+                 cache=NoCache,
+                 cache_args=None,
+                 cache_expire=None):
         self.load_fields()
         self.url = url
         self.refresh = False
@@ -137,6 +167,12 @@ class BaseFetcherModel(object):
         self._selector = None
         self.mappings = mappings or self.mappings.copy()
         self.cache_fetch = cache_fetch
+        self.cache_expire = cache_expire
+
+        if isinstance(cache, type):
+            self.cache = cache(**(cache_args or {}))
+        else:
+            self.cache = cache
 
     def load_fields(self):
         self._fields = []
@@ -147,15 +183,12 @@ class BaseFetcherModel(object):
 
     def fetch(self, url=None):
         url = self.url or url
-        try:
-            cached = redis.get(url)
-            if cached and self.cache_fetch:
-                return cached
-            response = requests.get(url)
-            if self.cache_fetch:
-                redis.set(url, response.content, ex=1800)
-        except ConnectionError:
-            response = requests.get(url)
+        cached = self.cache.get(url)
+        if cached and self.cache_fetch:
+            return cached
+        response = requests.get(url)
+        if self.cache_fetch:
+            self.cache.set(url, response.content, expire=self.cache_expire)
         return response.content
 
     @property

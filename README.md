@@ -159,6 +159,53 @@ def parse_name(self, selector):
 
 In the above case, the name field returns the raw_selector and in the parse method we can build extra queries using ``css`` or ``xpath`` and also we need to extract() the values from the selector and optionally select the first element and apply any transformation we need.
 
+### Caching the html fetch
+
+In order to cache the html returned by the url fetching for future parsing and tests you specify a cache model, by default there is no cache but you can use the built in RedisCache passing
+
+```python
+    from scrapy_model import RedisCache
+    fetcher = TestFetcher(cache_fetch=True,
+                          cache=RedisCache,
+                          cache_expire=1800)
+```
+
+or specifying arguments to the Redis client.
+
+> it is a general Redis connection from python ``redis`` module
+
+```python
+    fetcher = TestFetcher(cache_fetch=True,
+                          cache=RedisCache("192.168.0.12:9200"),
+                          cache_expire=1800)
+```
+
+You can create your own caching structure, e.g: to cache htmls in memcached or s3
+
+the cache class just need to implement ``get`` and ``set`` methods.
+
+```python
+from boto import connect_s3
+
+class S3Cache(object):
+    def __init__(self, *args, **kwargs):
+        connection = connect_s3(ACCESS_KEY, SECRET_KEY)
+        self.bucket = connection.get_bucket(BUCKET_ID)
+
+    def get(self, key):
+        value = self.bucket.get_key(key)
+        return value.get_contents_as_string() if key else None
+
+    def set(self, key, value, expire=None):
+        self.bucket.set_contents(key, value, expire=expire)
+
+
+fetcher = MyFetcher(url="http://...",
+                    cache_fetch=True,
+                    cache=S3cache,
+                    cache_expire=1800)
+
+```
 
 ### Instalation
 

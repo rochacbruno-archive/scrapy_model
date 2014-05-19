@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from scrapy_model import BaseFetcherModel, CSSField, XPathField
+from scrapy_model import BaseFetcherModel, CSSField, XPathField, RedisCache
 
 
 class TestFetcher(BaseFetcherModel):
@@ -43,7 +43,10 @@ class DummyModel(object):
 if __name__ == "__main__":
     from pprint import pprint
 
-    fetcher = TestFetcher(cache_fetch=True)
+    fetcher = TestFetcher(cache_fetch=True,
+                          cache=RedisCache,
+                          cache_expire=1800)
+
     fetcher.url = "http://en.m.wikipedia.org/wiki/Guido_van_Rossum"
 
     # Mappings can be loaded from a json file
