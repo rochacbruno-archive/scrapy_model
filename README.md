@@ -40,6 +40,19 @@ class MyFetcher(BaseFetcherModel):
 Fields can receive ``auto_extract=True`` parameter which auto extracts values from selector before calling the parse or processors. Also you can pass the ``takes_first=True`` which will for auto_extract and also tries to get the first element of the result, because scrapy selectors returns a list of matched elements.
 
 
+### Multiple queries in a single field
+
+You can use multiple queries for a single field
+
+```python
+name = XPathField(
+    ['//*[@id="8"]/div[2]/div/div[2]/div[2]/ul',
+     '//*[@id="8"]/div[2]/div/div[3]/div[2]/ul']
+)
+```
+
+In that case, the parsing will try to fetch by the first query and returns if finds a match, else it will try the subsequent queries until it finds something, or it will return an empty selector.
+
 Every method named ``parse_<field>`` will run after all the fields are fetched for each field.
 
 ```python

@@ -66,7 +66,7 @@ class BaseField(object):
 
     def __init__(self, query,
                  auto_extract=False, takes_first=False, processor=None):
-        self.query = query
+        self.query = [query] if isinstance(query, basestring) else query
         self.auto_extract = auto_extract
         self.takes_first = takes_first
         self.processor = processor or (lambda untouched_data: untouched_data)
@@ -130,12 +130,22 @@ class GenericField(BaseField):
 
 class CSSField(BaseField):
     def parse(self, selector):
-        return selector.css(self.query)
+        res = selector.css("__empty_selector__")
+        for query in self.query:
+            res = selector.css(query)
+            if len(res):
+                return res
+        return res
 
 
 class XPathField(BaseField):
     def parse(self, selector):
-        return selector.xpath(self.query)
+        res = selector.css("__empty_selector__")
+        for query in self.query:
+            res = selector.xpath(query)
+            if len(res):
+                return res
+        return res
 
 
 class BaseFetcherModel(object):
