@@ -22,7 +22,7 @@ test_requirements = [
 
 setup(
     name='scrapy_model',
-    version='0.1.3',
+    version='0.1.4',
     description='Scrapy helper to create scrapers from models',
     long_description=readme,
     author='Bruno Rocha',
