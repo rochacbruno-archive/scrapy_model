@@ -53,6 +53,34 @@ name = XPathField(
 
 In that case, the parsing will try to fetch by the first query and returns if finds a match, else it will try the subsequent queries until it finds something, or it will return an empty selector.
 
+#### Finding the best match by a query validator
+
+If you want to run multiple queries and also validates the best match you can pass a validator function which will take the scrapy selector an should return a boolean.
+
+Example, imagine you get the "name" field defined above and you want to validates each query to ensure it has a 'li' with a text "Schblaums" in there.
+
+```python
+
+def has_schblaums(selector):
+    for li in selector.css('li'): # takes each <li> inside the ul selector
+        li_text = li.css('::text').extract() # Extract only the text
+        if "Schblaums" in li_text:  # check if "Schblaums" is there
+            return True  # returns that it is validated!
+    return False  # else all queries are invalid
+
+class Fetcher(....):
+    name = XPathField(
+        ['//*[@id="8"]/div[2]/div/div[2]/div[2]/ul',
+         '//*[@id="8"]/div[2]/div/div[3]/div[2]/ul'],
+        query_validator=has_schblaums,
+        default="undefined_name"  # optional
+    )
+```
+
+In the above example if both queries are invalid, the "name" field will be filled with an empty_selector, or the value defined in "default" parameter.
+
+> **NOTE:** if the field has a "default" and fails in all the matcher, the default value will be passed to "processor" and also to "parse_" methods.
+
 Every method named ``parse_<field>`` will run after all the fields are fetched for each field.
 
 ```python

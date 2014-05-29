@@ -64,9 +64,16 @@ class BaseField(object):
     Base for other selector fields
     """
 
-    def __init__(self, query,
-                 auto_extract=False, takes_first=False, processor=None):
+    def __init__(self,
+                 query,
+                 auto_extract=False,
+                 takes_first=False,
+                 processor=None,
+                 query_validator=None,
+                 default=None):
         self.query = [query] if isinstance(query, basestring) else query
+        self.query_validator = query_validator or (lambda data: True)
+        self.default = default
         self.auto_extract = auto_extract
         self.takes_first = takes_first
         self.processor = processor or (lambda untouched_data: untouched_data)
@@ -78,13 +85,14 @@ class BaseField(object):
 
     def _parse(self, selector):
         parsed = self.parse(selector)
-        extracted = parsed.extract()
-        if self.takes_first and len(extracted) > 0:
-            for value in extracted:
-                if value is not None and value != '':
-                    return self._processor(value)
-        elif self.auto_extract:
-            return self._processor(extracted)
+        if hasattr(parsed, 'extract'):
+            extracted = parsed.extract()
+            if self.takes_first and len(extracted) > 0:
+                for value in extracted:
+                    if value is not None and value != '':
+                        return self._processor(value)
+            elif self.auto_extract:
+                return self._processor(extracted)
         return self._processor(parsed)
 
     def _processor(self, data):
@@ -130,22 +138,20 @@ class GenericField(BaseField):
 
 class CSSField(BaseField):
     def parse(self, selector):
-        res = selector.css("__empty_selector__")
         for query in self.query:
             res = selector.css(query)
-            if len(res):
+            if len(res) and self.query_validator(res):
                 return res
-        return res
+        return self.default or selector.css("__empty_selector__")
 
 
 class XPathField(BaseField):
     def parse(self, selector):
-        res = selector.css("__empty_selector__")
         for query in self.query:
             res = selector.xpath(query)
-            if len(res):
+            if len(res) and self.query_validator(res):
                 return res
-        return res
+        return self.default or selector.css("__empty_selector__")
 
 
 class BaseFetcherModel(object):
