@@ -65,8 +65,8 @@ def has_schblaums(selector):
     for li in selector.css('li'): # takes each <li> inside the ul selector
         li_text = li.css('::text').extract() # Extract only the text
         if "Schblaums" in li_text:  # check if "Schblaums" is there
-            return True  # returns that it is validated!
-    return False  # else all queries are invalid
+            return True  # this selector is valid!
+    return False  # invalid query, take the next or default value
 
 class Fetcher(....):
     name = XPathField(
