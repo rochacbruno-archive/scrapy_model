@@ -308,6 +308,10 @@ class TestFetcher(BaseFetcherModel):
     def parse_name(self, selector):
         return selector.extract()[0]
 
+    def pre_parse(self, selector=None):
+        # this method is executed before the parsing
+        # you can override it, take a look at the doc string
+
     def post_parse(self):
         # executed after all parsers
         # you can load any data on to self._data

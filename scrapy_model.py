@@ -215,12 +215,38 @@ class BaseFetcherModel(object):
             self.refresh = False
         return self._selector
 
+    def pre_parse(self, selector=None):
+        """
+        To be implemented optionally in child classes
+        Example: in this method is possible to validade
+        if there is a parse_ writen for each field in a model
+
+        class MyFetcherModel(BaseFetcherModel):
+            model_class = AModelFromAnyORM
+
+            def pre_parse(self, selector=None):
+                # considering model_class as Django or MongoEngine model
+                model_fields = self.model_class._meta.field_names
+                parse_methods = [
+                    k for k, v in self.__dict__.items()
+                    if k.startswith('parse_') and callable(v)
+                ]
+                for field_name in model_fields:
+                    if not field_name in parse_methods:
+                        raise Exception(
+                            "parse method for %s is mandatory!" % field_name
+                        )
+
+        """
+
     def parse(self, selector=None):
         """
         The entry point
         fetcher = Fetcher(url="http://...")
         fetcher.parse()
         """
+
+        self.pre_parse(selector)
 
         selector = selector or self.selector
 
