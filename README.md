@@ -1,11 +1,14 @@
 Create scraper using Scrapy Selectors
 ============================================
 
+> NOTE: Please consider using this another project https://github.com/ssteuteville/scrapyz better maintained and documented. But if you still find scrapy_model useful welcome!
+
 [![Build
 Status](https://travis-ci.org/rochacbruno/scrapy_model.png)](https://travis-ci.org/rochacbruno/scrapy_model)
 
 [![PyPi version](https://pypip.in/v/scrapy_model/badge.png)](https://pypi.python.org/pypi/scrapy_model/)
 [![PyPi downloads](https://pypip.in/d/scrapy_model/badge.png)](https://pypi.python.org/pypi/scrapy_model/)
+
 
 ## What is Scrapy?
 
