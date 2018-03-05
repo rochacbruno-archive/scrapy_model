@@ -6,8 +6,8 @@ Create scraper using Scrapy Selectors
 [![Build
 Status](https://travis-ci.org/rochacbruno/scrapy_model.png)](https://travis-ci.org/rochacbruno/scrapy_model)
 
-[![PyPi version](https://pypip.in/v/scrapy_model/badge.png)](https://pypi.python.org/pypi/scrapy_model/)
-[![PyPi downloads](https://pypip.in/d/scrapy_model/badge.png)](https://pypi.python.org/pypi/scrapy_model/)
+[![PyPi version](https://img.shields.io/pypi/v/scrapy_model.svg)](https://pypi.python.org/pypi/scrapy_model/)
+[![PyPi downloads](https://img.shields.io/pypi/dm/scrapy_model.svg)](https://pypi.python.org/pypi/scrapy_model/)
 
 
 ## What is Scrapy?
