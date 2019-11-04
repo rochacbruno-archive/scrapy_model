@@ -14,7 +14,7 @@ requirements = [
     'cffi==0.8.2',
     'Scrapy==0.22.2',
     'redis==2.8.0',
-    'requests==1.2.3',
+    'requests==2.20.0',
 ]
 
 test_requirements = [
