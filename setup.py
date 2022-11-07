@@ -12,7 +12,7 @@ readme = open('README.md').read()
 requirements = [
     'wheel==0.23.0',
     'cffi==0.8.2',
-    'Scrapy==0.22.2',
+    'Scrapy==2.7.1',
     'redis==2.8.0',
     'requests==2.20.0',
 ]
